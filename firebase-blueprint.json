@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile information for university nursing students",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "fullName": { "type": "string", "maxLength": 120 },
+        "university": { "type": "string", "maxLength": 150 },
+        "programme": { "type": "string", "maxLength": 150 },
+        "academicYear": { "type": "string", "maxLength": 30 },
+        "semester": { "type": "string", "maxLength": 30 },
+        "availableDailyHours": { "type": "number" },
+        "sessionDurationMinutes": { "type": "number" },
+        "breakDurationMinutes": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "fullName"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Academic course or unit enrolled by the student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "code": { "type": "string", "maxLength": 30 },
+        "title": { "type": "string", "maxLength": 180 },
+        "lecturer": { "type": "string", "maxLength": 120 },
+        "academicYear": { "type": "string", "maxLength": 30 },
+        "semester": { "type": "string", "maxLength": 30 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "upcomingExamDate": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "code", "title"]
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Individual lecture or lesson within a course",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "courseId": { "type": "string", "maxLength": 128 },
+        "lessonNumber": { "type": "number" },
+        "title": { "type": "string", "maxLength": 200 },
+        "status": { "type": "string", "enum": ["not_started", "in_progress", "studied", "needs_revision", "understood", "mastered"] },
+        "difficultyRating": { "type": "string", "enum": ["easy", "moderate", "challenging", "high_yield"] },
+        "originalFileName": { "type": "string", "maxLength": 255 },
+        "userPersonalNotes": { "type": "string", "maxLength": 50000 },
+        "lastStudiedAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "courseId", "title", "status"]
+    },
+    "StudyPlan": {
+      "title": "StudyPlan",
+      "description": "Weekly generated and approved revision study plan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["DRAFT", "APPROVED", "MODIFIED", "COMPLETED", "ARCHIVED"] },
+        "weekStartDate": { "type": "string", "maxLength": 30 },
+        "totalPlannedHours": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "status"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "Coursework, assignment, CAT, or practical report",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "courseId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["not_started", "in_progress", "submitted", "overdue"] },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+        "dueDate": { "type": "string", "maxLength": 50 },
+        "dueTime": { "type": "string", "maxLength": 20 },
+        "verified": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "courseId", "title", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/profile/info": {
+      "schema": "UserProfile",
+      "description": "Private profile information for the authenticated user"
+    },
+    "/users/{userId}/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Courses owned by the user"
+    },
+    "/users/{userId}/lessons/{lessonId}": {
+      "schema": "Lesson",
+      "description": "Lessons associated with user courses"
+    },
+    "/users/{userId}/studyPlans/{planId}": {
+      "schema": "StudyPlan",
+      "description": "Study plans generated and approved by the user"
+    },
+    "/users/{userId}/assignments/{assignmentId}": {
+      "schema": "Assignment",
+      "description": "Assignments and coursework tracked by the user"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "LECTRA - AI Nursing Notes & Revision Platform",
+  "description": "Intelligent academic study companion for Nursing students: lecture-to-lesson structuring, timetable reading planner, NCLEX/CAT revision, spaced repetition flashcards, and grounded AI tutor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
