@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Java
@@ -21,15 +21,16 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Make Gradle executable
-        run: chmod +x ./gradlew
+      - name: Build debug APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon assembleDebug
 
-      - name: Build APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: android-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: installable-android-apk
+          path: '**/build/outputs/apk/**/*.apk'
           if-no-files-found: error
+          retention-days: 7
+
