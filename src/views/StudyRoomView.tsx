@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { StudyNoteMode, MasteryStatus, DifficultyRating } from '../types';
+import { getApiUrl } from '../lib/apiConfig';
 import {
   Hourglass,
   Play,
@@ -97,7 +98,7 @@ export const StudyRoomView: React.FC = () => {
     setIsTutorLoading(true);
 
     try {
-      const res = await fetch('/api/gemini/tutor', {
+      const res = await fetch(getApiUrl('/api/gemini/tutor'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

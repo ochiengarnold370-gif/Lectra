@@ -82,6 +82,8 @@ export interface StudyNotesContent {
 export interface Lesson {
   id: string;
   courseId: string;
+  unitId?: string;
+  sourceDocumentIds?: string[];
   lessonNumber: number;
   title: string;
   originalFileName?: string;
@@ -103,6 +105,14 @@ export interface Lesson {
   updatedAt: string;
 }
 
+export interface CourseUnit {
+  id: string;
+  name: string;
+  code?: string;
+  lecturer?: string;
+  description?: string;
+}
+
 export interface Course {
   id: string;
   code: string; // e.g. "HNS 2101"
@@ -114,6 +124,8 @@ export interface Course {
   category: 'Anatomy' | 'Physiology' | 'Pharmacology' | 'Pathology' | 'Nursing Practice' | 'Community Health' | 'General';
   upcomingExamDate?: string;
   lessonIds: string[];
+  hasMultipleUnits?: boolean;
+  units?: CourseUnit[];
   colorTheme: string; // e.g. "indigo", "teal", "emerald", "amber"
   createdAt: string;
   updatedAt: string;
@@ -125,6 +137,7 @@ export interface DocumentRecord {
   fileSize: number;
   fileType: string;
   courseId: string;
+  unitId?: string;
   lessonId?: string;
   uploadTimestamp: string;
   status: DocumentProcessingStatus;

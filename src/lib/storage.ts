@@ -77,12 +77,14 @@ export function saveLocalState(state: AppStateData): void {
   }
 }
 
+import { getApiUrl } from './apiConfig';
+
 /**
  * Syncs state to the backend Express persistent store
  */
 export async function syncStateToBackend(state: AppStateData): Promise<boolean> {
   try {
-    const res = await fetch('/api/data', {
+    const res = await fetch(getApiUrl('/api/data'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(state),
@@ -99,7 +101,7 @@ export async function syncStateToBackend(state: AppStateData): Promise<boolean> 
  */
 export async function loadStateFromBackend(): Promise<AppStateData | null> {
   try {
-    const res = await fetch('/api/data');
+    const res = await fetch(getApiUrl('/api/data'));
     if (!res.ok) return null;
     const data = await res.json();
     if (data && data.userProfile && Array.isArray(data.courses)) {

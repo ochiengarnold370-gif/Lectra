@@ -39,6 +39,7 @@ import {
   Flame,
   CheckSquare,
   History,
+  ClipboardList,
 } from 'lucide-react';
 
 interface HomeViewProps {
@@ -536,6 +537,24 @@ export const HomeView: React.FC<HomeViewProps> = ({ onStudyNow }) => {
               const isProgress = cls.status === 'In Progress';
               const isNextUp = cls.isNextUpcoming;
 
+              // Find associated assignments for this course code
+              const courseAsgs = assignmentsWithUrgency.filter(
+                (a) => a.courseCode.toLowerCase() === cls.courseCode.toLowerCase() ||
+                       (cls.courseTitle && a.courseName.toLowerCase().includes(cls.courseCode.toLowerCase()))
+              );
+
+              // Sort: pending first, most urgent first
+              const sortedCourseAsgs = [...courseAsgs].sort((a, b) => {
+                if (a.actualStatus === 'submitted' && b.actualStatus !== 'submitted') return 1;
+                if (b.actualStatus === 'submitted' && a.actualStatus !== 'submitted') return -1;
+                if (a.urgencyTier === 'overdue' && b.urgencyTier !== 'overdue') return -1;
+                if (b.urgencyTier === 'overdue' && a.urgencyTier !== 'overdue') return 1;
+                return 0;
+              });
+
+              const primaryAsg = sortedCourseAsgs[0];
+              const hasMultiple = sortedCourseAsgs.length > 1;
+
               return (
                 <div
                   key={cls.id || `${cls.day}_${cls.startTime}_${idx}`}
@@ -569,7 +588,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onStudyNow }) => {
                     </h3>
 
                     {/* Meta info: Time, Venue */}
-                    <div className="space-y-1.5 text-xs text-slate-300 mb-4">
+                    <div className="space-y-1.5 text-xs text-slate-300 mb-3">
                       <div className="flex items-center space-x-2">
                         <Clock className="w-3.5 h-3.5 text-slate-400" />
                         <span className="font-semibold text-slate-200">
@@ -582,10 +601,63 @@ export const HomeView: React.FC<HomeViewProps> = ({ onStudyNow }) => {
                         <span className="truncate text-slate-300">{cls.venue}</span>
                       </div>
                     </div>
+
+                    {/* Assignment Given Subsection (Conditional display if assignments associated) */}
+                    {primaryAsg && (
+                      <div className="my-3 p-3 rounded-xl bg-teal-950/20 border border-teal-500/25 text-slate-200 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-1.5 text-teal-400 text-[10px] font-bold uppercase tracking-wider">
+                            <ClipboardList className="w-3.5 h-3.5" />
+                            <span>ASSIGNMENT GIVEN</span>
+                          </div>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            primaryAsg.actualStatus === 'submitted'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : primaryAsg.urgencyTier === 'overdue' || primaryAsg.urgencyTier === 'urgent_24h'
+                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                              : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          }`}>
+                            {primaryAsg.actualStatus === 'submitted' ? 'Submitted' : primaryAsg.remainingLabel}
+                          </span>
+                        </div>
+
+                        <div>
+                          <h4 className="text-xs sm:text-sm font-bold text-white">
+                            {primaryAsg.title}
+                          </h4>
+                          <p className="text-[11px] text-slate-300 line-clamp-2 mt-0.5 leading-relaxed">
+                            {primaryAsg.description}
+                          </p>
+                        </div>
+
+                        <div className="pt-2 border-t border-teal-500/15 flex items-center justify-between text-[11px]">
+                          <span className="text-slate-400">
+                            {primaryAsg.dueDate ? `Due: ${primaryAsg.dueDate} ${primaryAsg.dueTime ? `at ${primaryAsg.dueTime}` : ''}` : 'Deadline: Unspecified by Lecturer'}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            {hasMultiple && (
+                              <span className="text-[10px] text-teal-300 font-medium">
+                                +{sortedCourseAsgs.length - 1} more
+                              </span>
+                            )}
+                            <button
+                              onClick={() => {
+                                setSelectedAssignmentForDetails(primaryAsg);
+                                setEditingNotes(primaryAsg.personalNotes || '');
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 font-bold text-xs transition-colors flex items-center space-x-1"
+                            >
+                              <span>View Assignment</span>
+                              <ChevronRight className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Actions: View Course & View Details */}
-                  <div className="pt-3 border-t border-slate-800/70 flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-slate-800/70 flex items-center justify-between gap-2 mt-1">
                     <button
                       onClick={() => {
                         const targetCourse = courses.find(

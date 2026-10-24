@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Flashcard, Question, AssessmentAttempt } from '../types';
 import { isFlashcardDue } from '../lib/spacedRepetition';
+import { getApiUrl } from '../lib/apiConfig';
 import {
   Layers,
   Sparkles,
@@ -359,7 +360,7 @@ export const RevisionCentreView: React.FC = () => {
                 Practice Again
               </button>
             </div>
-          ) : (
+          ) : !currentCard ? null : (
             <div className="max-w-2xl mx-auto space-y-4">
               {/* Progress counter */}
               <div className="flex items-center justify-between text-xs text-slate-400 px-1">
@@ -367,7 +368,7 @@ export const RevisionCentreView: React.FC = () => {
                   Card {currentCardIndex + 1} of {eligibleCards.length}
                 </span>
                 <span className="capitalize px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-teal-300">
-                  {currentCard.type} • {currentCard.topic || 'General'}
+                  {currentCard?.type} • {currentCard?.topic || 'General'}
                 </span>
               </div>
 
@@ -388,12 +389,12 @@ export const RevisionCentreView: React.FC = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleBookmarkFlashcard(currentCard.id);
+                      if (currentCard) toggleBookmarkFlashcard(currentCard.id);
                     }}
                     className="p-1 text-slate-400 hover:text-amber-400 transition-colors"
                   >
                     <Bookmark
-                      className={`w-4 h-4 ${currentCard.bookmarked ? 'fill-amber-400 text-amber-400' : ''}`}
+                      className={`w-4 h-4 ${currentCard?.bookmarked ? 'fill-amber-400 text-amber-400' : ''}`}
                     />
                   </button>
                 </div>
@@ -401,7 +402,7 @@ export const RevisionCentreView: React.FC = () => {
                 {/* Center text */}
                 <div className="my-auto py-4 text-center">
                   <p className="text-base sm:text-lg font-bold leading-relaxed whitespace-pre-wrap">
-                    {isFlipped ? currentCard.back : currentCard.front}
+                    {isFlipped ? currentCard?.back : currentCard?.front}
                   </p>
                 </div>
 

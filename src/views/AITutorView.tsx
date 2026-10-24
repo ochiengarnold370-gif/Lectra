@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { TutorMessage } from '../types';
+import { getApiUrl } from '../lib/apiConfig';
 import {
   Bot,
   Send,
@@ -75,7 +76,7 @@ You can ask me to break down complex physiological mechanisms, generate comparat
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/gemini/tutor', {
+      const response = await fetch(getApiUrl('/api/gemini/tutor'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
